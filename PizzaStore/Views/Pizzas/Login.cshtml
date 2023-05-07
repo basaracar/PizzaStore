@@ -1,0 +1,57 @@
+﻿@model PizzaStore.Models.ViewModel.LoginViewModel;
+<section class="vh-100">
+    <div class="container-fluid h-custom">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                <form asp-action="Login" asp-controller="Pizzas">
+                
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <input type="email" asp-for="Email" class="form-control form-control-lg"
+                               placeholder="Kullanıcı Adınızı Girin" />
+                        <label class="form-label" asp-for="Email"></label>
+                    </div>
+
+                    <!-- Password input -->
+                    <div class="form-outline mb-3">
+                        <input type="password" asp-for="Password" class="form-control form-control-lg"
+                               placeholder="Şifreniz" />
+                        <label class="form-label" asp-for="Password"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Checkbox -->
+                        <div class="form-check mb-0">
+                            <input class="form-check-input me-2" type="checkbox" asp-for="IsRememberMe" />
+                            <label class="form-check-label" asp-for="IsRememberMe"></label>
+                        </div>
+                        
+                    </div>
+                    @if (ViewBag.Hata != null)
+                    {
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Checkbox -->
+                            <div class="form-check mb-0">
+                               
+                                <label class="text-danger">@ViewBag.Hata</label>
+                            </div>
+
+                        </div>
+                    }
+
+
+                    <div class="text-center text-lg-start mt-4 pt-2">
+                        <button type="submit" class="btn btn-primary btn-lg"
+                                style="padding-left: 2.5rem; padding-right: 2.5rem;">
+                            Login
+                        </button>
+                        <p class="small fw-bold mt-2 pt-1 mb-0">
+                            Üye Ol <a href="#!" class="link-danger">Register</a>
+                        </p>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
