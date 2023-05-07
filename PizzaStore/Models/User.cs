@@ -1,5 +1,7 @@
 ﻿
 
+using PizzaStore.Helper;
+
 namespace PizzaStore.Models
 {
     public class User

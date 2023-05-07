@@ -69,8 +69,7 @@ namespace PizzaStore.Controllers
         public async Task<IActionResult> Sepet()
         {
             ViewBag.Sepet = CartCount();
-         
-            var identity = User.Identity as ClaimsIdentity;
+           var identity = User.Identity as ClaimsIdentity;
             ViewBag.Name = identity.Claims.Where(c => c.Type == "Name").Select(c => c.Value).FirstOrDefault();
             ViewBag.Role = identity.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).FirstOrDefault();
             var sepet = HttpContext.Session.Get<List<Cart>>("cartItems");
@@ -97,21 +96,35 @@ namespace PizzaStore.Controllers
             var hash=Crypto.HashPassword(user.Password);
 
             if (ModelState.IsValid) { 
-                User? account=_context.Users.FirstOrDefault(u=>u.Email.Equals(user.Email)&&u.Password.Equals(user.Password));
+                                User? account=_context.Users.FirstOrDefault(u=>u.Email.Equals(user.Email)&&u.Password.Equals(user.Password));
+                //Kullanıcı Varsa
                 if (account != null)
                 {
+            //Kullanıcı bilgilerini saklamak için claim listesi oluşturuyoruz.
             Claim[] claims =
             {
-               
+               //Name isimli bir claim oluşturup kullanıcı adını aktarıyoruz
                 new Claim("Name",account.Name),
+                //Email isimli bir claim oluşturup kullanıcı e postası aktarıyoruz
                 new Claim(ClaimTypes.Email, account.Email),
                 new Claim(ClaimTypes.Role,account.role.ToString()),
             };
+                    //kimlik iddası (ClaimsIdentity) tipinde bir nesne oluşturuyoruz ve iddalarımızı, cookie ye yazacak şekilde olması için ayarlıyoruz.
+                    //Bu nesne kullanıcı bilgilerimizi cookie ye yazarak saklayacak böylece ihtiyaç duyduğumuzda çağırabiliriz.
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    //Authentication özelliği eklemek için oluşturduğumuz nesne
                     var authProperties = new AuthenticationProperties();
                     //Sürekli açık kalsın diye beni hatırla
-                    authProperties.IsPersistent = true;
-                    //HttpContext.SignInAsync
+                     authProperties.IsPersistent = true;
+                    //Bu kod, kullanıcının kimlik doğrulama işlemini başlatır ve kullanıcının oturum açtığını belirtmek için bir kimlik doğrulama çerezini oluşturur.
+
+                    //HttpContext.SignInAsync metodu, kullanıcının oturum açtığına dair bilgileri içeren bir çerez oluşturur. CookieAuthenticationDefaults.AuthenticationScheme, uygulamanın kimlik doğrulama düzenlemesini belirtir.Yani, bu durumda, kimlik doğrulama için kullanılacak varsayılan çerez şeması "CookieAuthentication" olarak ayarlanmıştır.
+
+                    //Yeni bir ClaimsPrincipal örneği, kullanıcının kimlik bilgilerini içeren kimlik doğrulama talebini oluşturmak için oluşturulur.Bu kimlik bilgileri, kullanıcının kimliğini doğrulamak için kullanılacak olan bir dizi iddia(claim) içerir.
+
+                    //AuthProperties, kullanıcının kimlik doğrulaması çereziyle ilişkili olan özelliklerin belirtildiği bir nesnedir. Örneğin, bu özellikler kullanıcının çerezin ne kadar süre geçerli olacağı, hangi yol kullanılacak oturum açma sayfasına yönlendirileceği vb. bilgileri içerebilir.
+
+                    //Bu yöntem, kullanıcının oturum açması için gerekli olan tüm bilgileri alır, doğrular ve sonunda kullanıcıyı oturum açtığına dair bir bilgiyle yönlendirir.Bu şekilde, kullanıcının kimlik doğrulama bilgileri alındıktan sonra, uygulama içinde izin verilen sayfalara erişebilir.
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
                     return RedirectToAction("Index");
                    
@@ -134,14 +147,6 @@ namespace PizzaStore.Controllers
 
         // GET: Pizzas
      
-        public async void ViewbagDoldur()
-        {
-            ViewBag.Categories = await _context.Categories.ToListAsync();
-            ViewBag.Sepet = CartCount();
-            var identity = User.Identity as ClaimsIdentity;
-            ViewBag.Name = identity.Claims.Where(c => c.Type == "Name").Select(c => c.Value).FirstOrDefault();
-            ViewBag.Role = identity.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).FirstOrDefault();
-        }
         public async Task<IActionResult> Index(int? id)
         {
             ViewBag.Categories = await _context.Categories.ToListAsync();
